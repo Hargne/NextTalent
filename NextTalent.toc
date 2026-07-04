@@ -1,5 +1,6 @@
 ## Interface: 11502
 ## Title: NextTalent
 ## SavedVariablesPerCharacter: CharacterSpec
+utils.lua
 talents.lua
 core.lua

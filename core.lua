@@ -4,15 +4,6 @@ local frame = CreateFrame("FRAME", "NextTalentAddonFrame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("PLAYER_LEVEL_CHANGED")
 
-local YELLOW = "FFFF00"
-local RED = "FF0000"
-local GREEN = "00FF00"
-local BLUE = "0000FF"
-
-local function colorText(text, color)
-    return "\124cff" .. color .. text .. "\124r"
-end
-
 local function getPlayerClass()
     guid = UnitGUID("player")
     if guid == nil then
@@ -27,7 +18,7 @@ local function printPlayerClass()
         return "FFFFFF"
     end
     local rPerc, gPerc, bPerc, argbHex = GetClassColor(englishClass)
-    return colorText(class, string.format("%02x%02x%02x", rPerc * 255, gPerc * 255, bPerc * 255))
+    return addon.colorText(class, string.format("%02x%02x%02x", rPerc * 255, gPerc * 255, bPerc * 255))
 end
 
 local function printAvailableSpecs()
@@ -36,7 +27,7 @@ local function printAvailableSpecs()
 end
 
 local function addonMessage(message)
-    print(colorText("[NextTalent]: ", YELLOW) .. message)
+    print(addon.colorText("[NextTalent]: ", addon.colors.YELLOW) .. message)
 end
 
 local function printNoSpecSelected()
@@ -95,11 +86,11 @@ local function getNextTalent()
     local nextTalentToLearn = availableSpecs[CharacterSpec][level - 9]
 
     if nextTalentToLearn == nil then
-        addonMessage(colorText("Not implemented yet", RED))
+        addonMessage(addon.colorText("Not implemented yet", addon.colors.RED))
         return
     end
 
-    addonMessage("Talent to learn this level (" .. level .. "): " .. colorText(nextTalentToLearn, YELLOW))
+    addonMessage("Talent to learn this level (" .. level .. "): " .. addon.colorText(nextTalentToLearn, addon.colors.YELLOW))
 end
 
 local function listTalentsToLearn()
@@ -143,7 +134,7 @@ local function listTalentsToLearn()
     for i = 0, unspentTalentPoints - 1 do
         local talent = availableSpecs[CharacterSpec][startIndex + i]
         if talent ~= nil then
-            addonMessage((i + 1) .. ": " .. colorText(talent, YELLOW))
+            addonMessage((i + 1) .. ": " .. addon.colorText(talent, addon.colors.YELLOW))
         end
     end
 end
@@ -167,7 +158,7 @@ local function listTalentsForSpec(spec)
     end
     addonMessage("Talents for spec " .. spec .. ":")
     for level, talent in ipairs(specTalents) do
-        addonMessage("Level " .. (level + 9) .. ": " .. colorText(talent, YELLOW))
+        addonMessage("Level " .. (level + 9) .. ": " .. addon.colorText(talent, addon.colors.YELLOW))
     end
 end
 
@@ -176,7 +167,7 @@ local function eventHandler(self, event, arg1)
         if CharacterSpec == nil then
             printNoSpecSelected()
         else
-            addonMessage("Current spec: '" .. colorText(CharacterSpec, GREEN) .. "'")
+            addonMessage("Current spec: '" .. addon.colorText(CharacterSpec, addon.colors.GREEN) .. "'")
         end
     end
     if event == "PLAYER_LEVEL_CHANGED" then
@@ -205,7 +196,7 @@ SlashCmdList["NEXTTALENT"] = function(message, editbox)
             if CharacterSpec == nil then
                 printNoSpecSelected()
             else
-                addonMessage("Current spec: " .. colorText(CharacterSpec, YELLOW))
+                addonMessage("Current spec: " .. addon.colorText(CharacterSpec, addon.colors.YELLOW))
             end
             printAvailableSpecs()
             return
@@ -216,7 +207,7 @@ SlashCmdList["NEXTTALENT"] = function(message, editbox)
         for _, spec in pairs(availableSpecs) do
             if string.lower(spec) == string.lower(argument) then
                 CharacterSpec = spec
-                print("Spec selected: " .. colorText(CharacterSpec, YELLOW))
+                print("Spec selected: " .. addon.colorText(CharacterSpec, addon.colors.YELLOW))
                 return
             end
         end
