@@ -4,8 +4,10 @@ local frame = CreateFrame("FRAME", "NextTalentAddonFrame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("PLAYER_LEVEL_CHANGED")
 
+local specType = "leveling"
+
 local function getPlayerClass()
-    guid = UnitGUID("player")
+    local guid = UnitGUID("player")
     if guid == nil then
         print("Player not found")
     end
@@ -21,76 +23,23 @@ local function printPlayerClass()
     return addon.colorText(class, string.format("%02x%02x%02x", rPerc * 255, gPerc * 255, bPerc * 255))
 end
 
-local function printAvailableSpecs()
-    local availableSpecs = getAvailableSpecs()
-    print("Available specs for " .. printPlayerClass() .. ": " .. table.concat(availableSpecs, ", "))
-end
+local function listAvailableSpecs()
+    local class = getPlayerClass()
+    if class == nil then
+        return
+    end
 
-local function addonMessage(message)
-    print(addon.colorText("[NextTalent]: ", addon.colors.YELLOW) .. message)
+    local specs = addon:GetSpecsForClass(class)
+    if specs == nil then
+        addon:PrintMessage("No specs found for class " .. class)
+        return
+    end
+    
+    addon:PrintMessage("Available specs for " .. class .. ": " .. table.concat(specs, ", "))
 end
 
 local function printNoSpecSelected()
-    addonMessage("No spec selected. Type /nexttalent spec <spec> to select a spec.")
-end
-
-local function getAvailableSpecs()
-    local class = getPlayerClass()
-    if class == nil then
-        return
-    end
-
-    if addon.talents == nil then
-        return
-    end
-
-    local classTalents = addon.talents[class]
-    if classTalents == nil then
-        return
-    end
-
-    local specs = {}
-    for specName in pairs(classTalents) do
-        table.insert(specs, specName)
-    end
-
-    table.sort(specs, function(a, b)
-        return string.lower(a) < string.lower(b)
-    end)
-
-    return specs
-end
-
-local function getNextTalent()
-    local class = getPlayerClass()
-    if class == nil then
-        return
-    end
-
-    if CharacterSpec == nil then
-        printNoSpecSelected()
-        return
-    end
-
-    local availableSpecs = addon.talents[class]
-
-    if availableSpecs == nil then
-        addonMessage("No talents found for class " .. printPlayerClass())
-        return
-    elseif availableSpecs[CharacterSpec] == nil then
-        addonMessage("No talents found for spec " .. CharacterSpec)
-        return
-    end
-
-    local level = UnitLevel("player")
-    local nextTalentToLearn = availableSpecs[CharacterSpec][level - 9]
-
-    if nextTalentToLearn == nil then
-        addonMessage(addon.colorText("Not implemented yet", addon.colors.RED))
-        return
-    end
-
-    addonMessage("Talent to learn this level (" .. level .. "): " .. addon.colorText(nextTalentToLearn, addon.colors.YELLOW))
+    addon:PrintMessage("No spec selected. Type /nexttalent spec <spec> to select a spec.")
 end
 
 local function listTalentsToLearn()
@@ -111,54 +60,54 @@ local function listTalentsToLearn()
         return
     end
 
-    local availableSpecs = addon.talents[class]
-
-    if availableSpecs == nil then
-        addonMessage("No talents found for class " .. printPlayerClass())
-        return
-    elseif availableSpecs[CharacterSpec] == nil then
-        addonMessage("No talents found for spec " .. CharacterSpec)
+    local unspentTalentPoints = GetUnspentTalentPoints()
+    if unspentTalentPoints == 0 then
+        addon:PrintMessage("No unspent talent points available")
         return
     end
 
-    local unspentTalentPoints = GetUnspentTalentPoints()
-
-    if unspentTalentPoints == 0 then
-        addonMessage("No unspent talent points available")
+    local talents = addon:GetSpecTalents(class, CharacterSpec)
+    if talents == nil then
+        addon:PrintMessage("No talents found for spec " .. CharacterSpec)
         return
     end
 
     -- List the talents to learn based on the number of unspent talent points
-    addonMessage("Talents to learn for spec " .. CharacterSpec .. ":")
+    addon:PrintMessage("Talents to learn for spec " .. CharacterSpec .. ":")
     local startIndex = level - 9
     for i = 0, unspentTalentPoints - 1 do
-        local talent = availableSpecs[CharacterSpec][startIndex + i]
+        local talent = talents[specType][startIndex + i]
         if talent ~= nil then
-            addonMessage((i + 1) .. ": " .. addon.colorText(talent, addon.colors.YELLOW))
+            addon:PrintMessage((i + 1) .. ": " .. addon.colorText(talent, addon.colors.YELLOW))
         end
     end
 end
 
-local function listTalentsForSpec(spec)
+local function listTalentsForCurrentSpec()
     local class = getPlayerClass()
     if class == nil then
         return
     end
-    if addon.talents == nil then
+
+    if CharacterSpec == nil then
+        printNoSpecSelected()
         return
     end
-    local classTalents = addon.talents[class]
-    if classTalents == nil then
+
+    local specTypes = addon:GetSpecTalents(class, CharacterSpec)
+    if specTypes == nil then
+        addon:PrintMessage("No talents found for spec " .. CharacterSpec)
         return
     end
-    local specTalents = classTalents[spec]
-    if specTalents == nil then
-        addonMessage("No talents found for spec " .. spec)
+
+    local talents = specTypes[specType]
+    if talents == nil then
         return
     end
-    addonMessage("Talents for spec " .. spec .. ":")
-    for level, talent in ipairs(specTalents) do
-        addonMessage("Level " .. (level + 9) .. ": " .. addon.colorText(talent, addon.colors.YELLOW))
+
+    addon:PrintMessage("Talents for spec " .. CharacterSpec .. ":")
+    for level, talent in ipairs(talents) do
+        addon:PrintMessage("Level " .. (level + 9) .. ": " .. addon.colorText(talent, addon.colors.YELLOW))
     end
 end
 
@@ -167,7 +116,7 @@ local function eventHandler(self, event, arg1)
         if CharacterSpec == nil then
             printNoSpecSelected()
         else
-            addonMessage("Current spec: '" .. addon.colorText(CharacterSpec, addon.colors.GREEN) .. "'")
+            addon:PrintMessage("Current spec: '" .. addon.colorText(CharacterSpec, addon.colors.GREEN) .. "'")
         end
     end
     if event == "PLAYER_LEVEL_CHANGED" then
@@ -180,6 +129,12 @@ SLASH_NEXTTALENT1 = "/nexttalent"
 SLASH_NEXTTALENT2 = "/nt"
 
 SlashCmdList["NEXTTALENT"] = function(message, editbox)
+    local playerClass = getPlayerClass()
+    -- No need to continue if there is no class available
+    if playerClass == nil then
+        return
+    end
+        
     local cmd, argument = message:match("^(%S*)%s*(.-)$")
     local command = string.lower(cmd)
 
@@ -187,45 +142,36 @@ SlashCmdList["NEXTTALENT"] = function(message, editbox)
         return listTalentsToLearn()
 
     elseif command == "spec" then
-        local class = getPlayerClass()
-        if class == nil then
-            return
-        end
-
         if argument == "" or argument == nil then
             if CharacterSpec == nil then
                 printNoSpecSelected()
             else
-                addonMessage("Current spec: " .. addon.colorText(CharacterSpec, addon.colors.YELLOW))
+                addon:PrintMessage("Current spec: " .. addon.colorText(CharacterSpec, addon.colors.YELLOW))
             end
-            printAvailableSpecs()
+            listAvailableSpecs()
             return
         end
 
         -- Find the spec that matches the input
-        local availableSpecs = getAvailableSpecs()
+        local availableSpecs = addon:GetSpecsForClass(playerClass)
         for _, spec in pairs(availableSpecs) do
             if string.lower(spec) == string.lower(argument) then
                 CharacterSpec = spec
-                print("Spec selected: " .. addon.colorText(CharacterSpec, addon.colors.YELLOW))
+                addon:PrintMessage("Spec selected: " .. addon.colorText(CharacterSpec, addon.colors.YELLOW))
                 return
             end
         end
         -- Spec not found
-        addonMessage("The selected spec is not available")
-        printAvailableSpecs()
+        addon:PrintMessage("The selected spec is not available")
+        listAvailableSpecs()
         return
 
     elseif command == "list" then
-        if CharacterSpec == nil then
-            printNoSpecSelected()
-            return
-        end
-        listTalentsForSpec(CharacterSpec)
+        listTalentsForCurrentSpec()
         return
 
     elseif command == "help" then
-        addonMessage("Available commands:")
+        addon:PrintMessage("Available commands:")
         print("/nexttalent spec <spec> - select a spec")
         print("/nexttalent - show the next talent to learn")
         print("/nexttalent list - list all talents for the selected spec")

@@ -2,5 +2,9 @@
 ## Title: NextTalent
 ## SavedVariablesPerCharacter: CharacterSpec
 utils.lua
-talents.lua
+specs.lua
+data/hunter.lua
+data/warrior.lua
+data/rogue.lua
+data/priest.lua
 core.lua
