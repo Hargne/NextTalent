@@ -13,3 +13,7 @@ addon.colors = {
 addon.colorText = function (text, color)
     return "\124cff" .. color .. text .. "\124r"
 end
+
+function addon:PrintMessage(message)
+    print(addon.colorText("[NextTalent]:", addon.colors.YELLOW) .. " " .. message)
+end
