@@ -5,6 +5,7 @@
 
 utils.lua
 specs.lua
+data/druid.lua
 data/hunter.lua
 data/warrior.lua
 data/rogue.lua

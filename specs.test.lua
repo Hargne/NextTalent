@@ -2,6 +2,7 @@ local addon = {}
 _G.addon = addon
 
 assert(loadfile("specs.lua"))("specs", addon)
+assert(loadfile("data/druid.lua"))("druid", addon)
 assert(loadfile("data/hunter.lua"))("hunter", addon)
 assert(loadfile("data/warrior.lua"))("warrior", addon)
 assert(loadfile("data/priest.lua"))("priest", addon)
