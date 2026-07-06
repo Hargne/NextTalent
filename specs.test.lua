@@ -7,6 +7,7 @@ assert(loadfile("data/warrior.lua"))("warrior", addon)
 assert(loadfile("data/priest.lua"))("priest", addon)
 assert(loadfile("data/rogue.lua"))("rogue", addon)
 assert(loadfile("data/shaman.lua"))("shaman", addon)
+assert(loadfile("data/warlock.lua"))("warlock", addon)
 
 print("Testing Specs Module")
 

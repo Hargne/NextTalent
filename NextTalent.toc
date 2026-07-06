@@ -10,4 +10,5 @@ data/warrior.lua
 data/rogue.lua
 data/priest.lua
 data/shaman.lua
+data/warlock.lua
 core.lua
