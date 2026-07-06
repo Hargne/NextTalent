@@ -8,6 +8,7 @@ specs.lua
 data/druid.lua
 data/hunter.lua
 data/warrior.lua
+data/mage.lua
 data/rogue.lua
 data/paladin.lua
 data/priest.lua
