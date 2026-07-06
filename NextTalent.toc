@@ -1,6 +1,8 @@
 ## Interface: 11502
 ## Title: NextTalent
+## Author: Johan Hargne Nohagen
 ## SavedVariablesPerCharacter: CharacterSpec
+
 utils.lua
 specs.lua
 data/hunter.lua
