@@ -3,8 +3,10 @@ local name, addon = ...;
 local frame = CreateFrame("FRAME", "NextTalentAddonFrame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("PLAYER_LEVEL_CHANGED")
+frame:RegisterEvent("PLAYER_TALENT_UPDATE")
 
 local specType = "leveling"
+local previousTalentPoints = GetUnspentTalentPoints()
 
 local function getPlayerClass()
     local guid = UnitGUID("player")
@@ -34,7 +36,7 @@ local function listAvailableSpecs()
         addon:PrintMessage("No specs found for class " .. class)
         return
     end
-    
+
     addon:PrintMessage("Available specs for " .. class .. ": " .. table.concat(specs, ", "))
 end
 
@@ -57,18 +59,21 @@ local function listTalentsToLearn()
 
     -- Skip levels below 10, as talents are not available yet
     if level < 10 then
-        return
-    end
-
-    local unspentTalentPoints = GetUnspentTalentPoints()
-    if unspentTalentPoints == 0 then
-        addon:PrintMessage("No unspent talent points available")
+        addon:PrintMessage("You are below level 10. Talents are not available yet.")
         return
     end
 
     local talents = addon:GetSpecTalents(class, CharacterSpec)
     if talents == nil then
         addon:PrintMessage("No talents found for spec " .. CharacterSpec)
+        return
+    end
+
+    local unspentTalentPoints = GetUnspentTalentPoints()
+    if unspentTalentPoints == 0 then
+        addon:PrintMessage("You have no unspent talent points.")
+        addon:PrintMessage("Talent to learn next level: " ..
+                               addon.colorText(talents[specType][(level - 9) + 1], addon.colors.YELLOW))
         return
     end
 
@@ -111,19 +116,29 @@ local function listTalentsForCurrentSpec()
     end
 end
 
-local function eventHandler(self, event, arg1)
+frame:SetScript("OnEvent", function(self, event, arg1)
     if event == "ADDON_LOADED" and arg1 == "NextTalent" then
         if CharacterSpec == nil then
             printNoSpecSelected()
+            listAvailableSpecs()
         else
             addon:PrintMessage("Current spec: '" .. addon.colorText(CharacterSpec, addon.colors.GREEN) .. "'")
         end
     end
+
     if event == "PLAYER_LEVEL_CHANGED" then
         listTalentsToLearn()
     end
-end
-frame:SetScript("OnEvent", eventHandler)
+
+    -- To prevent the PLAYER_TALENT_UPDATE to trigger listTalentsToLearn() upon login
+    if event == "PLAYER_TALENT_UPDATE" then
+        local currentPoints = GetUnspentTalentPoints()
+        if currentPoints ~= previousTalentPoints then
+            previousTalentPoints = currentPoints
+            listTalentsToLearn()
+        end
+    end
+end)
 
 SLASH_NEXTTALENT1 = "/nexttalent"
 SLASH_NEXTTALENT2 = "/nt"
@@ -134,7 +149,7 @@ SlashCmdList["NEXTTALENT"] = function(message, editbox)
     if playerClass == nil then
         return
     end
-        
+
     local cmd, argument = message:match("^(%S*)%s*(.-)$")
     local command = string.lower(cmd)
 
