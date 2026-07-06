@@ -9,6 +9,7 @@ data/druid.lua
 data/hunter.lua
 data/warrior.lua
 data/rogue.lua
+data/paladin.lua
 data/priest.lua
 data/shaman.lua
 data/warlock.lua

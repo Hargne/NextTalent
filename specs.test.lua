@@ -5,6 +5,7 @@ assert(loadfile("specs.lua"))("specs", addon)
 assert(loadfile("data/druid.lua"))("druid", addon)
 assert(loadfile("data/hunter.lua"))("hunter", addon)
 assert(loadfile("data/warrior.lua"))("warrior", addon)
+assert(loadfile("data/paladin.lua"))("paladin", addon)
 assert(loadfile("data/priest.lua"))("priest", addon)
 assert(loadfile("data/rogue.lua"))("rogue", addon)
 assert(loadfile("data/shaman.lua"))("shaman", addon)
@@ -52,7 +53,7 @@ for _, class in ipairs(classes) do
                 error("No leveling talents found for class " .. class .. " and spec " .. spec)
             end
 
-            if #talents.leveling < (60 - 10) then
+            if #talents.leveling < (60 - 9) then
                 error("Spec " .. spec .. " for class " .. class .. " has less than 50 leveling talents")
             end
 
