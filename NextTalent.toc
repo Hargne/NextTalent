@@ -9,4 +9,5 @@ data/hunter.lua
 data/warrior.lua
 data/rogue.lua
 data/priest.lua
+data/shaman.lua
 core.lua
