@@ -1,6 +1,12 @@
-## Interface: 11502
+## Interface: 11509
+
 ## Title: NextTalent
+## Notes: Helps you follow established talent builds while leveling
+
+## Version 0.0.1
+
 ## Author: Johan Hargne Nohagen
+
 ## SavedVariablesPerCharacter: CharacterSpec
 
 utils.lua

@@ -8,32 +8,15 @@ frame:RegisterEvent("PLAYER_TALENT_UPDATE")
 local specType = "leveling"
 local previousTalentPoints = GetUnspentTalentPoints()
 
-local function getPlayerClass()
-    local guid = UnitGUID("player")
-    if guid == nil then
-        print("Player not found")
-    end
-    return GetPlayerInfoByGUID(guid)
-end
-
-local function printPlayerClass()
-    local class, englishClass = getPlayerClass()
-    if englishClass == nil then
-        return "FFFFFF"
-    end
-    local rPerc, gPerc, bPerc, argbHex = GetClassColor(englishClass)
-    return addon.colorText(class, string.format("%02x%02x%02x", rPerc * 255, gPerc * 255, bPerc * 255))
-end
-
 local function listAvailableSpecs()
-    local class = getPlayerClass()
+    local class = addon:getPlayerClass()
     if class == nil then
         return
     end
 
     local specs = addon:GetSpecsForClass(class)
     if specs == nil then
-        addon:PrintMessage("No specs found for class " .. class)
+        addon:PrintMessage("No specs found for " .. class)
         return
     end
 
@@ -45,7 +28,7 @@ local function printNoSpecSelected()
 end
 
 local function listTalentsToLearn()
-    local class = getPlayerClass()
+    local class = addon:getPlayerClass()
     if class == nil then
         return
     end
@@ -89,7 +72,7 @@ local function listTalentsToLearn()
 end
 
 local function listTalentsForCurrentSpec()
-    local class = getPlayerClass()
+    local class = addon:getPlayerClass()
     if class == nil then
         return
     end
@@ -144,7 +127,7 @@ SLASH_NEXTTALENT1 = "/nexttalent"
 SLASH_NEXTTALENT2 = "/nt"
 
 SlashCmdList["NEXTTALENT"] = function(message, editbox)
-    local playerClass = getPlayerClass()
+    local playerClass = addon:getPlayerClass()
     -- No need to continue if there is no class available
     if playerClass == nil then
         return
@@ -194,5 +177,5 @@ SlashCmdList["NEXTTALENT"] = function(message, editbox)
         return
     end
 
-    print("Unknown command. Type /nexttalent help to see available commands.")
+    addon:PrintError("Unknown command. Type /nexttalent help to see available commands.")
 end
