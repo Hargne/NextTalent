@@ -6,7 +6,7 @@ frame:RegisterEvent("PLAYER_LEVEL_CHANGED")
 frame:RegisterEvent("PLAYER_TALENT_UPDATE")
 
 local specType = "leveling"
-local previousTalentPoints = GetUnspentTalentPoints()
+local previousUnspentTalentPoints = GetUnspentTalentPoints()
 
 local function listAvailableSpecs()
     local class = addon:getPlayerClass()
@@ -40,9 +40,7 @@ local function listTalentsToLearn()
 
     local level = UnitLevel("player")
 
-    -- Skip levels below 10, as talents are not available yet
     if level < 10 then
-        addon:PrintMessage("You are below level 10. Talents are not available yet.")
         return
     end
 
@@ -55,20 +53,23 @@ local function listTalentsToLearn()
     local unspentTalentPoints = GetUnspentTalentPoints()
     if unspentTalentPoints == 0 then
         addon:PrintMessage("You have no unspent talent points.")
-        addon:PrintMessage("Talent to learn next level: " ..
-                               addon.colorText(talents[specType][(level - 9) + 1], addon.colors.YELLOW))
+        addon:PrintMessage("Talent to learn next level: " .. addon.colorText(talents[specType][(level - 9) + 1], addon.colors.YELLOW))
         return
     end
 
-    -- List the talents to learn based on the number of unspent talent points
-    addon:PrintMessage("Talents to learn for spec " .. CharacterSpec .. ":")
-    local startIndex = level - 9
-    for i = 0, unspentTalentPoints - 1 do
-        local talent = talents[specType][startIndex + i]
-        if talent ~= nil then
-            addon:PrintMessage((i + 1) .. ": " .. addon.colorText(talent, addon.colors.YELLOW))
+    -- If the player has more than one unspent talent point, list the talents to learn for the current spec
+    if unspentTalentPoints > 1 then
+        addon:PrintMessage("Talents to learn for spec " .. CharacterSpec .. ":")
+        local startIndex = level - 9
+        for i = 0, unspentTalentPoints - 1 do
+            local talent = talents[specType][startIndex + i]
+            if talent ~= nil then
+                addon:PrintMessage((i + 1) .. ": " .. addon.colorText(talent, addon.colors.YELLOW))
+            end
         end
     end
+
+    addon:PrintMessage("Next talent to learn: " .. addon.colorText(talents[specType][(level - 9) + 1], addon.colors.YELLOW))
 end
 
 local function listTalentsForCurrentSpec()
@@ -113,11 +114,11 @@ frame:SetScript("OnEvent", function(self, event, arg1)
         listTalentsToLearn()
     end
 
-    -- To prevent the PLAYER_TALENT_UPDATE to trigger listTalentsToLearn() upon login
     if event == "PLAYER_TALENT_UPDATE" then
-        local currentPoints = GetUnspentTalentPoints()
-        if currentPoints ~= previousTalentPoints then
-            previousTalentPoints = currentPoints
+        local currentUnspentPoints = GetUnspentTalentPoints()
+        -- By caching the number of unspent talent points, we prevent the PLAYER_TALENT_UPDATE event from triggering listTalentsToLearn() upon login
+        if currentUnspentPoints > 0 and currentUnspentPoints ~= previousUnspentTalentPoints then
+            previousUnspentTalentPoints = currentUnspentPoints
             listTalentsToLearn()
         end
     end
@@ -137,6 +138,11 @@ SlashCmdList["NEXTTALENT"] = function(message, editbox)
     local command = string.lower(cmd)
 
     if command == "" or command == nil then
+        local level = UnitLevel("player")
+        if level < 10 then
+            addon:PrintMessage("You are below level 10. Talents are not available yet.")
+            return
+        end
         return listTalentsToLearn()
 
     elseif command == "spec" then
