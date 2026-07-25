@@ -10,6 +10,7 @@
 ## SavedVariablesPerCharacter: CharacterSpec
 
 utils/chat.lua
+utils/playerUtils.lua
 utils/talents.lua
 data/druid.lua
 data/hunter.lua
