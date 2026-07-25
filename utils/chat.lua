@@ -21,12 +21,3 @@ end
 function addon:PrintError(message)
     print(addon.colorText("[NextTalent]:", addon.colors.RED) .. " " .. message)
 end
-
-function addon:getPlayerClass()
-    local guid = UnitGUID("player")
-    if guid == nil then
-        addon:PrintError("Player not found")
-        return nil
-    end
-    return GetPlayerInfoByGUID(guid)
-end

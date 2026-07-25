@@ -9,8 +9,8 @@
 
 ## SavedVariablesPerCharacter: CharacterSpec
 
-utils.lua
-specs.lua
+utils/chat.lua
+utils/specs.lua
 data/druid.lua
 data/hunter.lua
 data/warrior.lua
