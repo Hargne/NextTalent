@@ -1,7 +1,7 @@
 local addon = {}
 _G.addon = addon
 
-assert(loadfile("utils/specs.lua"))("specs", addon)
+assert(loadfile("utils/talents.lua"))("talents", addon)
 assert(loadfile("data/druid.lua"))("druid", addon)
 assert(loadfile("data/hunter.lua"))("hunter", addon)
 assert(loadfile("data/warrior.lua"))("warrior", addon)
@@ -37,4 +37,4 @@ assert_equal(hunter_talents.leveling[1], "Impoved Aspect of the Hawk (Rank 1)", 
 local missing_talents = addon:GetSpecTalents("Hunter", "UNKNOWN SPEC")
 assert_equal(missing_talents, nil, "GetSpecTalents should return nil for an unknown spec")
 
-print("Specs module tests passed")
+print("Talents module tests passed")

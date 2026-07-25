@@ -46,4 +46,5 @@ for _, file in ipairs(test_files) do
     run_test_file(file)
 end
 
+print("--------------------------------")
 print("All test files passed")
