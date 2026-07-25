@@ -72,7 +72,26 @@ local function listTalentsToLearn()
     addon:PrintMessage("Next talent to learn: " .. addon.colorText(talents[specType][(level - 9) + 1], addon.colors.YELLOW))
 end
 
-local function listTalentsForCurrentSpec()
+local function selectSpec(selectedSpec)
+    if selectedSpec == "" or selectedSpec == nil then
+        return
+    end
+
+    local availableSpecs = addon:GetSpecsForClass(playerClass)
+    for _, spec in pairs(availableSpecs) do
+        if string.lower(spec) == string.lower(selectedSpec) then
+            CharacterSpec = spec
+            addon:PrintMessage("Spec selected: " .. addon.colorText(CharacterSpec, addon.colors.YELLOW))
+            return
+        end
+    end
+
+    addon:PrintMessage("The spec you selected is not available for this class!")
+    listAvailableSpecs()
+    return
+end
+
+local function listAllTalents()
     local class = addon:getPlayerClass()
     if class == nil then
         return
@@ -134,8 +153,8 @@ SlashCmdList["NEXTTALENT"] = function(message, editbox)
         return
     end
 
-    local cmd, argument = message:match("^(%S*)%s*(.-)$")
-    local command = string.lower(cmd)
+    local cmd, argument = message and message:match("^(%S*)%s*(.-)$")
+    local command = cmd and string.lower(cmd) or ""
 
     if command == "" or command == nil then
         local level = UnitLevel("player")
@@ -156,22 +175,11 @@ SlashCmdList["NEXTTALENT"] = function(message, editbox)
             return
         end
 
-        -- Find the spec that matches the input
-        local availableSpecs = addon:GetSpecsForClass(playerClass)
-        for _, spec in pairs(availableSpecs) do
-            if string.lower(spec) == string.lower(argument) then
-                CharacterSpec = spec
-                addon:PrintMessage("Spec selected: " .. addon.colorText(CharacterSpec, addon.colors.YELLOW))
-                return
-            end
-        end
-        -- Spec not found
-        addon:PrintMessage("The selected spec is not available")
-        listAvailableSpecs()
+        selectSpec(argument)
         return
 
     elseif command == "list" then
-        listTalentsForCurrentSpec()
+        listAllTalents()
         return
 
     elseif command == "help" then
