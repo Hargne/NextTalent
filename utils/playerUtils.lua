@@ -6,5 +6,6 @@ function addon:getPlayerClass()
         addon:PrintError("Player not found")
         return nil
     end
-    return GetPlayerInfoByGUID(guid)
+    local _, class = GetPlayerInfoByGUID(guid)
+    return class
 end
