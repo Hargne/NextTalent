@@ -161,7 +161,7 @@ SlashCmdList["NEXTTALENT"] = function(message, editbox)
         return
     end
 
-    local cmd, argument = message and message:match("^(%S*)%s*(.-)$")
+    local cmd, argument = (message or ""):match("^(%S*)%s*(.-)$")
     local command = cmd and string.lower(cmd) or ""
 
     if command == "" or command == nil then
