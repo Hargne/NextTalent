@@ -89,6 +89,7 @@ local function selectSpec(inputSpec)
         if string.lower(spec) == string.lower(inputSpec) then
             CharacterSpec = spec
             selectedSpec = spec
+            PlaySound(236, "master")
             addon:PrintMessage("Spec selected: " .. addon.colorText(selectedSpec, addon.colors.YELLOW))
             return
         end
