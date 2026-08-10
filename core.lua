@@ -5,7 +5,7 @@ frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("PLAYER_LEVEL_CHANGED")
 frame:RegisterEvent("PLAYER_TALENT_UPDATE")
 
-local selectedSpec = CharacterSpec or nil
+local selectedSpec = nil
 local specType = "leveling"
 local previousUnspentTalentPoints = GetUnspentTalentPoints()
 
@@ -130,6 +130,7 @@ end
 
 frame:SetScript("OnEvent", function(self, event, arg1)
     if event == "ADDON_LOADED" and arg1 == "NextTalent" then
+        selectedSpec = CharacterSpec
         if not selectedSpec then
             printNoSpecSelected()
             listAvailableSpecs()
