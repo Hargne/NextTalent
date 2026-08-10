@@ -1,0 +1,24 @@
+## Interface: 30300
+
+## Title: NextTalent
+## Notes: Helps you follow established talent builds while leveling
+
+## Version 0.0.1
+
+## Author: Johan Hargne Nohagen
+
+## SavedVariablesPerCharacter: CharacterSpec
+
+utils/chat.lua
+utils/playerUtils.lua
+utils/talents.lua
+data/wrath/druid.lua
+data/wrath/hunter.lua
+data/wrath/warrior.lua
+data/wrath/mage.lua
+data/wrath/rogue.lua
+data/wrath/paladin.lua
+data/wrath/priest.lua
+data/wrath/shaman.lua
+data/wrath/warlock.lua
+core.lua
