@@ -12,6 +12,7 @@
 utils/chat.lua
 utils/playerUtils.lua
 utils/talents.lua
+data/wrath/deathknight.lua
 data/wrath/druid.lua
 data/wrath/hunter.lua
 data/wrath/warrior.lua
